@@ -1,0 +1,325 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: FTM
+
+; Microsoft Dynamics AX MENUITEM : SAED_MKA_UploadFields unloaded
+; --------------------------------------------------------------------------------
+  VERSION 1
+  
+  MENUITEM #SAED_MKA_UploadFields
+    Type: 3
+    PROPERTIES
+      Name                #SAED_MKA_UploadFields
+      Label               #Upload Tool For Worker
+      HelpText            #Upload Tool For Worker
+      ObjectType          #Class
+      Object              #Saed_MKA_UploadFields
+      Origin              #{C1169820-BDBF-4384-82AC-A1569EDA406D}
+    ENDPROPERTIES
+    
+  ENDMENUITEM
+  
+
+***Element: CLS
+
+; Microsoft Dynamics AX Class: SAED_MKA_UploadFields unloaded
+; --------------------------------------------------------------------------------
+  CLSVERSION 1
+  
+  CLASS #SAED_MKA_UploadFields
+    PROPERTIES
+      Name                #SAED_MKA_UploadFields
+      Extends             #RunBaseBatch
+      Origin              #{E89F502C-4011-4574-B4C0-34D9A52B9C41}
+    ENDPROPERTIES
+    
+    METHODS
+      SOURCE #classDeclaration
+        #class SAED_MKA_UploadFields extends RunBaseBatch
+        #{
+        #
+        #    DialogField         dlgFileName;
+        #    FileName            fileName;
+        #
+        #    guid myGuid;
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #    #define.CurrentVersion(1)
+        #
+        #    #localmacro.CurrentList
+        #        fileName
+        #    #endmacro
+        #
+        #    #define.FieldNoTmp(600)
+        #}
+      ENDSOURCE
+      SOURCE #dialog
+        #protected Object dialog ()
+        #{
+        #    DialogRunbase ret;
+        #
+        #
+        #    ret = super();
+        #
+        #    ret.caption("Import Transaction");
+        #
+        #
+        #
+        #    dlgFileName = ret.addFieldValue(extendedTypeStr (FileNameOpen),"Select file","Select file to import");
+        #
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #getfilename
+        #FileName getfilename()
+        #{
+        #    return filename;
+        #}
+      ENDSOURCE
+      SOURCE #getFromDialog
+        #public boolean getFromDialog()
+        #{
+        #    boolean ret;
+        #    ;
+        #    ret = super();
+        #    fileName=  dlgFileName.value();
+        #    if(fileName && ret)
+        #        return ret;
+        #    else
+        #        return false;
+        #}
+      ENDSOURCE
+      SOURCE #Import_FIXData
+        #private boolean Import_FIXData(Container record, boolean ret=true)
+        #{
+        #    HcmWorker Hcmworker;
+        #    SitHcmWorker Sithcmworker;
+        #   // ProjValEmplProjSetup PrevProjSetup;
+        #  //  boolean CheckIfIdel;
+        #    SitProjValEmplProjSetup SitProjValEmplProjSetup;
+        #    HcmPersonnelNumberId PersonnalNumber;
+        #    ProjId Project;
+        #    HRMMediaId AganceName;
+        #    TransDate NewEndDate;
+        #    ProjGroup ProjGroup;
+        #    ProjTable PrevProjTbl;
+        #    int     day;
+        #    int     month;
+        #    int     yr;
+        #    int     counter;
+        #
+        #    counter = 1;
+        #    if(conLen(record) == 3)
+        #    {
+        #        PersonnalNumber = conPeek(record,1);
+        #        Project= conpeek(record, 2);
+        #        AganceName= conpeek(record, 3);
+        #    }
+        #    else
+        #    {
+        #        error("Invalid imported file Formate.");
+        #        ret=false;
+        #        return ret;
+        #    }
+        #
+        #
+        #    ttsBegin;
+        #
+        #    while  select * from HcmWorker
+        #    where HcmWorker.PersonnelNumber == PersonnalNumber
+        #    {
+        #        //info("entered to update");
+        #    select forUpdate SitHcmWorker
+        #    where SitHcmWorker.Worker ==HcmWorker.RecId;
+        #
+        #    SitHcmWorker.Project = project;
+        #    SitHcmWorker.AgencyName = AganceName;
+        #    SitHcmWorker.update();
+        #       // info("Updated");
+        #   //  counter++ ;
+        #    }
+        #
+        #  //  info(strFmt("%1",counter));
+        #    ttsCommit;
+        #
+        #
+        #
+        #    return ret;
+        #
+        #
+        #}
+      ENDSOURCE
+      SOURCE #pack
+        #public container pack()
+        #{
+        #    return [#CurrentVersion,#CurrentList];
+        #}
+      ENDSOURCE
+      SOURCE #run
+        #public void run()
+        #{
+        #
+        #    IO  iO;
+        #    #File
+        #    Container           record;
+        #    boolean first = true;
+        #
+        #    LineNum                 lineNum = 0;
+        #    boolean ret;
+        #
+        #
+        #
+        #    ;
+        #
+        #
+        #    iO = new CommaTextIo(fileName, #io_read);
+        #    if (! iO || iO.status() != IO_Status::Ok)
+        #    {
+        #        throw error("@SYS19358");
+        #    }
+        #
+        #
+        #    ttsBegin;
+        #    try{
+        #    myGuid = newguid();
+        #    ret=true;
+        #
+        #    while (iO.status() == IO_Status::Ok && ret)
+        #    {
+        #        record = iO.read();
+        #        if (record && ret)
+        #        {
+        #            LineNum++;
+        #            if(LineNum== 1)
+        #            {
+        #                continue;
+        #            }
+        #
+        #                ret=this.Import_FIXData(record,ret);
+        #
+        #            first = false;
+        #        }
+        #        else
+        #        {
+        #            if(first)
+        #            {
+        #              info("The imported file is empty.");
+        #              ret=false;
+        #            }
+        #        }
+        #    }
+        #
+        #        if(ret)
+        #        {
+        #            ttsCommit;
+        #            info(strFmt("Number of imported transaction %1.",LineNum-1));
+        #        }
+        #        else
+        #        {
+        #            ttsAbort;
+        #            info(strFmt("Error in imported file in line num %1 .",LineNum));
+        #        }
+        #
+        #    }catch{ttsAbort;
+        #        info(strFmt("Error in imported file in line num %1 .",LineNum));
+        #    }
+        #
+        #
+        #}
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+      ENDSOURCE
+      SOURCE #unpack
+        #public boolean unpack(container packedClass)
+        #{
+        #    Integer     version     = RunBase::getVersion(packedClass);
+        #
+        #    switch (version)
+        #    {
+        #        case #CurrentVersion   :
+        #            [version,#CurrentList] = packedClass;
+        #            break;
+        #        default :
+        #            return false;
+        #    }
+        #
+        #    return true;
+        #
+        #}
+      ENDSOURCE
+      SOURCE #description
+        #public static ClassDescription description()
+        #{
+        #    return "Upload Project and Agance Name for worker";
+        #}
+      ENDSOURCE
+      SOURCE #main
+        #public static void main(Args _args)
+        #{
+        #    SAED_MKA_UploadFields SAED_MKA_UploadFields;
+        #    #Task
+        #
+        #
+        #    ;
+        #
+        #
+        #    SAED_MKA_UploadFields = new SAED_MKA_UploadFields();
+        #
+        #
+        #    if (SAED_MKA_UploadFields.prompt())
+        #    {
+        #        SAED_MKA_UploadFields.run();
+        #
+        #    }
+        #
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDCLASS
+
+***Element: PRN
+
+; Microsoft Dynamics AX Project : SAED_MKA_UploadTool unloaded
+; --------------------------------------------------------------------------------
+  PROJECTVERSION 2
+  
+  PROJECT #SAED_MKA_UploadTool
+  SHARED
+  PROPERTIES
+    Name                #SAED_MKA_UploadTool
+    Origin              #{3A115170-C340-4256-9480-23A3A41BD7D4}
+  ENDPROPERTIES
+  
+    PROJECTCLASS ProjectNode
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 3
+      UTILOBJECTID 0
+      NODETYPE 296
+      NAME #SAED_MKA_UploadFields
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 45
+      UTILOBJECTID 1025729
+      NODETYPE 329
+      NAME #SAED_MKA_UploadFields
+    ENDNODE
+  ENDPROJECT
+  
+
+***Element: END
