@@ -1,0 +1,3397 @@
+﻿Exportfile for AOT version 1.0 or later
+Formatversion: 1
+
+***Element: FRM
+
+; Microsoft Dynamics AX Forms unloaded
+; --------------------------------------------------------------------------------
+FRMVERSION 12
+
+FORM #SitVisManagement
+  PROPERTIES
+    Name                #SitVisManagement
+    Origin              #{19691503-4D4C-417F-8427-1EBD5D4444F4}
+  ENDPROPERTIES
+  
+  METHODS
+    SOURCE #classDeclaration
+      #public class FormRun extends ObjectRun
+      #{
+      #
+      #}
+    ENDSOURCE
+    SOURCE #activate
+      #public void activate(boolean _active)
+      #{
+      #
+      #    super(_active);
+      #
+      #}
+    ENDSOURCE
+    SOURCE #init
+      #public void init()
+      #{
+      #   // super();
+      #
+      #    SitVisMaster sitVisMaster;
+      #super();
+      #    /*
+      #sitVisMaster = element.args().record();
+      #VisaMaster_ds.query().dataSourceTable(Tablenum(sitVisMaster)).addRange(fieldNum(sitVisMaster,RecId)).
+      #value(SysQuery::value(sitVisMaster.Recid));
+      #    */
+      #
+      #}
+    ENDSOURCE
+  ENDMETHODS
+  OBJECTBANK
+    PROPERTIES
+    ENDPROPERTIES
+    
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #SitVisProfession
+          Table               #SitVisProfession
+          JoinSource          #VisaMaster
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+          REFERENCEFIELD Profession
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #lookupReference
+                #public Common lookupReference(FormReferenceControl _formReferenceControl)
+                #{
+                #     SysReferenceTableLookup     sysRefTableLookup;
+                #    Query                       lookupQuery = new Query();
+                #    QueryBuildDataSource        lookupQueryDataSource,lookupQueryDataSource1,lookupQueryDataSource2;
+                #
+                #    // Construct the SysRefTableLookup object
+                #    sysRefTableLookup = SysReferenceTableLookup::newParameters(tableNum(SitHcmJobDetailsView), _formReferenceControl);
+                #
+                #    // Add the field list that will be displayed on the lookup form
+                #    sysRefTableLookup.addLookupfield(fieldNum(SitHcmJobDetailsView, JobId));
+                #    sysRefTableLookup.addLookupfield(fieldNum(SitHcmJobDetailsView, ArabicDescription));
+                #    sysRefTableLookup.addLookupfield(fieldNum(SitHcmJobDetailsView, Description));
+                #
+                #    // Construct the query's data source
+                #    lookupQueryDataSource = lookupQuery.addDataSource(tableNum(SitHcmJobDetailsView));
+                #
+                #    lookupQueryDataSource1 = lookupQueryDataSource.addDataSource(tableNum(SitVisProfession));
+                #    lookupQueryDataSource1.joinMode(JoinMode::InnerJoin);
+                #    lookupQueryDataSource1.relations(true);
+                #
+                #    // Add ranges to the query data source
+                #   lookupQueryDataSource1.addRange(fieldNum(SitVisProfession, VisaId)).value(VisaMaster.RefNo);
+                #
+                #    // Pass the query to the lookup object
+                #
+                #
+                #    if(VisaMaster.RefNo == "")
+                #    {
+                #
+                #    }
+                #    else
+                #    {
+                #        sysRefTableLookup.parmQuery(lookupQuery);
+                #    }
+                #      return sysRefTableLookup.performFormLookup();
+                #
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDREFERENCEFIELD
+          
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #validateDelete
+          #public boolean validateDelete()
+          #{
+          #    boolean ret;
+          #
+          #    ret = super();
+          #if(VisaMaster.PurchId)
+          #    {
+          #       // VisaMaster_ds.allowEdit(false);
+          #       // SitVisProfession_ds.allowEdit(false);
+          #      //  MaintainGroup.visible(false);
+          #     //   NewGroup.visible(false);
+          #        throw error("PO has alredy generated ");
+          #    }
+          #    return ret;
+          #}
+        ENDSOURCE
+        SOURCE #initValue
+          #public void initValue()
+          #{
+          #    super();
+          #}
+        ENDSOURCE
+        SOURCE #init
+          #public void init()
+          #{
+          #    super();
+          #}
+        ENDSOURCE
+        SOURCE #active
+          #public int active()
+          #{
+          #    int ret;
+          #
+          #    ret = super();
+          #
+          #
+          #   VisaProfessionDetails.enabled(SitVisProfession.RecId!=0 && VisaMaster.VisaType==SitVisType::Fixed && SitVisProfession.VisaProfessionStatus !=VisaProfessionStatus::Cancelled);
+          #    VisaProfessionCancellation.enabled(SitVisProfession.RecId!=0 && VisaMaster.VisaType==SitVisType::Fixed && SitVisProfession.VisaProfessionStatus !=VisaProfessionStatus::Cancelled );
+          #    ReversalCancellation.enabled(SitVisProfession.RecId!=0 && VisaMaster.VisaType==SitVisType::Fixed && SitVisProfession.VisaProfessionStatus ==VisaProfessionStatus::Cancelled );
+          #    Nationality.visible(VisaMaster.VisaType==SitVisType::Fixed);
+          #    SitVisProfession_Gender.visible(VisaMaster.VisaType==SitVisType::Fixed);
+          #    SitVisProfession_ds.object(fieldNum(SitVisProfession,Nationality)).mandatory(VisaMaster.VisaType==SitVisType::Fixed);
+          #/*
+          #    if(VisaMaster.PurchId)
+          #    {
+          #        ProfessionNewButton.visible(false);
+          #        ProfessionDeleteButton.visible(false);
+          #        VisaProfessionCancellation.visible(false);
+          #        VisaMaster_ds.allowDelete(false);
+          #        VisaMaster_ds.allowEdit(false);
+          #    }
+          #*/
+          #    /*
+          #      if(SitVisProfession.VisaId)
+          #    {
+          #        SAED_VisaManagementCreatePO.visible(true);
+          #    }
+          #    else
+          #    {
+          #        SAED_VisaManagementCreatePO.visible(false);
+          #    }
+          #    */
+          #    //
+          #    return ret;
+          #}
+        ENDSOURCE
+      ENDMETHODS
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #VisaMaster
+          Table               #SitVisMaster
+          Index               #VisaIdx
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+          DATAFIELD EndDate
+            PROPERTIES
+              Mandatory           #Yes
+            ENDPROPERTIES
+            
+            METHODS
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD IssueDate
+            PROPERTIES
+              Mandatory           #Yes
+            ENDPROPERTIES
+            
+            METHODS
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD RefNo
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #jumpRef
+                #public void jumpRef()
+                #{
+                #    Args            args;
+                #    MenuFunction    menuFunction;
+                #    SitVisMaster sitViMaster,sitViMasterRefNo;
+                #    ;
+                #
+                #    Select sitViMaster where sitViMaster.VisaId == SitVisProfession.VisaId;
+                #      menuFunction = new MenuFunction(menuitemDisplayStr("SitVisManagement"), MenuItemType::Display);
+                #    args = new Args();
+                #
+                #    args = new Args(menuFunction.object());
+                #    args.caller(this);
+                #    select sitViMasterRefNo where sitViMasterRefNo.VisaId == sitViMaster.RefNo;
+                #
+                #    args.record(sitViMasterRefNo); // to be a datasource which added in the current form
+                #    args.lookupRecord(sitViMasterRefNo);
+                #
+                #  menuFunction.run(args);
+                #
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD StartDate
+            PROPERTIES
+              Mandatory           #Yes
+            ENDPROPERTIES
+            
+            METHODS
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD HijriEndDate
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #modified
+                #public void modified()
+                #{
+                #    date        startdate , enddate;
+                #    SAED_Functions          SAED_Functions;
+                #
+                #    ;
+                #    SAED_Functions = new SAED_Functions();
+                #    startdate = SAED_Functions.ConvertToGregorianDate(VisaMaster.HijriIssueDate);
+                #    enddate   = SAED_Functions.ConvertToGregorianDate(VisaMaster.HijriEndDate);
+                #
+                #    if(startdate>enddate)
+                #    {
+                #
+                #        error("Issue date should be less than End date");
+                #       // super();
+                #    }
+                #
+                #    else
+                #    {
+                #    super();
+                #    }
+                #
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD HijriIssueDate
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #validate
+                #public boolean validate()
+                #{
+                #    boolean ret;
+                #     Global::getValidateStudentName(VisaMaster.HijriStartDate);
+                #    ret = super();
+                #
+                #    return ret;
+                #}
+                #
+                #/*public void modified()
+                #{
+                #    Global::getValidateStudentName(VisaMaster.HijriStartDate);
+                #    super();
+                #}*/
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+          DATAFIELD HijriStartDate
+            PROPERTIES
+            ENDPROPERTIES
+            
+            METHODS
+              SOURCE #modified
+                #public void modified()
+                #{
+                #
+                #    Global::getValidateStudentName(VisaMaster.HijriStartDate);
+                #    super();
+                #}
+              ENDSOURCE
+            ENDMETHODS
+          ENDDATAFIELD
+          
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+        SOURCE #validateDelete
+          #public boolean validateDelete()
+          #{
+          #    boolean ret;
+          #
+          #    ret = super();
+          #    /*
+          #    if(VisaMaster.PurchId)
+          #    {
+          #       // VisaMaster_ds.allowEdit(false);
+          #       // SitVisProfession_ds.allowEdit(false);
+          #      //  MaintainGroup.visible(false);
+          #     //   NewGroup.visible(false);
+          #        throw error("PO has alredy generated ");
+          #    }
+          #    */
+          #    return ret;
+          #}
+        ENDSOURCE
+        SOURCE #active
+          #public int active()
+          #{
+          #    int ret;
+          #    SitVisProfession    sitVisProfessionPO;
+          #    PurchTable          purchTable;
+          #
+          #    ret = super();
+          #
+          #     VisaMaster_ds.allowDelete((VisaMaster.Source == SitVisSource::Direct));
+          #     VisaMaster_ds.allowCreate((VisaMaster.Source == SitVisSource::Direct));
+          #     VisaMaster_ds.allowEdit((VisaMaster.Source == SitVisSource::Direct));
+          #     SitVisProfession_ds.allowDelete((VisaMaster.Source == SitVisSource::Direct));
+          #     SitVisProfession_ds.allowCreate((VisaMaster.Source == SitVisSource::Direct));
+          #     SitVisProfession_ds.allowEdit((VisaMaster.Source == SitVisSource::Direct));
+          #     ProfessionActionPane.enabled((VisaMaster.Source == SitVisSource::Direct && VisaMaster.RecId!=0));
+          #     SitManVisaBorderNumber.enabled(VisaMaster.RecId!=0 && VisaMaster.VisaType==SitVisType::Fixed);
+          #     SitVisProfessionDetails.enabled(VisaMaster.RecId!=0 && VisaMaster.VisaType==SitVisType::Fixed);
+          #    //Added by Ajit
+          #    /*
+          # if(VisaMaster.PurchId)
+          #    {
+          #        VisaMaster_ds.allowEdit(false);
+          #        SitVisProfession_ds.allowEdit(false);
+          #        MaintainGroup.visible(false);
+          #        NewGroup.visible(false);
+          #    }
+          #    */
+          #/*
+          #  select sitVisProfessionPO  where sitVisProfessionPO.VisaId == VisaMaster.VisaId;
+          #    if(sitVisProfessionPO && !VisaMaster.PurchId)
+          #    {
+          #        SAED_VisaManagementCreatePO.visible(true);
+          #    }
+          #    else
+          #    {
+          #        SAED_VisaManagementCreatePO.visible(false);
+          #    }
+          #
+          #    select purchTable  where purchTable.PurchId == VisaMaster.PurchId
+          #                            && (purchTable.PurchStatus == PurchStatus::Received
+          #                            || purchTable.PurchStatus == PurchStatus::Invoiced);
+          #    if(purchTable)
+          #    {
+          #        SitManVisaBorderNumber.enabled(true);
+          #    }
+          #    else
+          #    {
+          #        SitManVisaBorderNumber.enabled(false);
+          #    }
+          #    if(VisaMaster.PurchId && VisaMaster.SAED_LedgerJournalId)
+          #    {
+          #        SAED_DeletePOJournal.enabled(true);
+          #    }
+          #    else
+          #    {
+          #        SAED_DeletePOJournal.enabled(false);
+          #    }
+          #*/
+          #
+          #
+          #    return ret;
+          #}
+        ENDSOURCE
+        SOURCE #initValue
+          #public void initValue()
+          #{
+          #    super();
+          #    VisaMaster.Source=SitVisSource::Direct;
+          #}
+        ENDSOURCE
+      ENDMETHODS
+    ENDDATASOURCE
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #SAED_VisaPODetail
+          Table               #SAED_VisaPODetail
+          JoinSource          #VisaMaster
+          InsertIfEmpty       #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+      ENDMETHODS
+    ENDDATASOURCE
+  ENDOBJECTBANK
+  
+  REFERENCEDATASOURCES
+  ENDREFERENCEDATASOURCES
+  
+  JOINS
+    SitVisProfession VisaMaster
+    SAED_VisaPODetail VisaMaster
+  ENDJOINS
+  
+  PARTREFERENCES
+  ENDPARTREFERENCES
+  
+  DESIGN
+    PROPERTIES
+      Left                #10
+      Caption             #@REC243
+      LeftMargin          #30
+      WorkflowEnabled     #Yes
+      WorkflowDatasource  #VisaMaster
+      WorkflowType        #SAED_VisaWF
+      Style               #DetailsFormMaster
+    ENDPROPERTIES
+    
+    CONTAINER
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #ActionPane
+          ElementPosition     #1073741822
+          HierarchyParent     #VisaPO
+          Style               #Strip
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #ActionPaneHeader
+          ElementPosition     #715827882
+          DataSource          #VisaMaster
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #ProfessionActionPane
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #ProfessionGroup
+          Style               #Strip
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #ActionPaneTab
+          ElementPosition     #1431655764
+          HierarchyParent     #ProfessionActionPane
+          DataSource          #SitVisProfession
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #ActionPaneTab1
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPane
+          DataSource          #SAED_VisaPODetail
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #HeaderHomeTab
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPaneHeader
+          Caption             #@REC157
+          DataSource          #VisaMaster
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #AttachmentsGroup
+          ElementPosition     #1789569705
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@SYS316708
+          DataSource          #VisaMaster
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #BorderNum
+          AutoDeclaration     #Yes
+          ElementPosition     #1312351117
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@REC281
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #ButtonGroup
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPaneTab
+          DataSource          #SitVisProfession
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #ButtonGroup1
+          ElementPosition     #2028178999
+          HierarchyParent     #HeaderHomeTab
+          Caption             #Delete PO Journal
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #ListGroup
+          AutoDeclaration     #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@SYS118440
+          DataSource          #VisaMaster
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #MaintainGroup
+          ElementPosition     #894784851
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@SYS316874
+          DataSource          #VisaMaster
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #NewDeleteGroup
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPaneTab1
+          DataSource          #SAED_VisaPODetail
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #NewGroup
+          ElementPosition     #596523234
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@SYS2055
+          DataSource          #VisaMaster
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #SAED_CreatePO
+          AutoDeclaration     #Yes
+          ElementPosition     #1908874352
+          HierarchyParent     #HeaderHomeTab
+          Caption             #.
+          DataSource          #VisaMaster
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #View
+          AutoDeclaration     #Yes
+          ElementPosition     #1193046470
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@REC179
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GRID
+        PROPERTIES
+          Name                #Grid
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1431655764
+          HierarchyParent     #Group1
+          DataSource          #SAED_VisaPODetail
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GRID
+        PROPERTIES
+          Name                #HeaderGrid
+          Width               #Column width
+          ElementPosition     #1610612734
+          HierarchyParent     #ProfessionGroup
+          DataSource          #SitVisProfession
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #BodyGroup
+          Width               #Column width
+          ElementPosition     #1431655764
+          TopMargin           #20
+          LeftMargin          #20
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #CommentGroup
+          ElementPosition     #1789569705
+          HierarchyParent     #GeneralGroup
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #DateGroup
+          ElementPosition     #1073741823
+          HierarchyParent     #GeneralGroup
+          TopMargin           #10
+          Columns             #3
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+              #0
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #GeneralGroup
+          ElementPosition     #858993458
+          HierarchyParent     #BodyGroup
+          Caption             #@REC65
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Group1
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1610612733
+          HierarchyParent     #VisaPO
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #HeaderGroup
+          ElementPosition     #715827882
+          HierarchyParent     #GeneralGroup
+          Columns             #2
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #OtherGroup
+          ElementPosition     #1431655764
+          HierarchyParent     #GeneralGroup
+          TopMargin           #10
+          Columns             #2
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #ProfessionGroup
+          Width               #Column width
+          ElementPosition     #1288490187
+          HierarchyParent     #BodyGroup
+          Caption             #@REC2
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #VisaPO
+          Width               #700
+          Height              #250
+          ElementPosition     #1073741822
+          HierarchyParent     #BodyGroup
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #VisaTotals
+          ElementPosition     #1717986916
+          HierarchyParent     #BodyGroup
+          Caption             #@VIS23
+          DataSource          #SitVisProfession
+          BottomMargin        #20
+          Columns             #2
+          ArrangeGuide        
+            ARRAY INDEX Columns 
+              #0
+              #0
+            ENDARRAY
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REFERENCEGROUP
+        PROPERTIES
+          Name                #ProfessionRefrenceGroup
+          ElementPosition     #747642454
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          ReferenceField      #Profession
+          ReplacementFieldGroup #JobId
+          Label               #@SYS85329
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTON
+        PROPERTIES
+          Name                #SAED_DeletePOJournal
+          AutoDeclaration     #Yes
+          Visible             #No
+          ElementPosition     #1431655764
+          HierarchyParent     #ButtonGroup1
+          Text                #Delete Journal & Cancel PO
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #clicked
+            #void clicked()
+            #{
+            #    PurchTable          purchTable;
+            #    LedgerJournalTable  ledgerJournalTable;
+            #    LedgerJournalTrans  ledgerJournalTrans;
+            #
+            #    select purchTable  where purchTable.PurchId == VisaMaster.PurchId && purchTable.PurchStatus != PurchStatus::Canceled;
+            #    if(purchTable)
+            #    {
+            #    SAED_VisaManagementCreatePO::SAED_CanacelPO(purchTable);
+            #    }
+            #ttsBegin;
+            #    while select forUpdate ledgerJournalTrans where ledgerJournalTrans.JournalNum == VisaMaster.SAED_LedgerJournalId
+            #    {
+            #        ledgerJournalTrans.delete();
+            #    }
+            #    select forUpdate ledgerJournalTable where ledgerJournalTable.JournalNum == VisaMaster.SAED_LedgerJournalId;
+            #    if(ledgerJournalTable)
+            #    {
+            #    ledgerJournalTable.delete();
+            #    }
+            #    ttsCommit;
+            #    VisaMaster.SAED_LedgerJournalId ='';
+            #
+            #    super();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #SitVisProfession_Gender
+          AutoDeclaration     #Yes
+          ElementPosition     #1598682268
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          DataField           #Gender
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #SitVisProfession_VisaProfessionStatus
+          AllowEdit           #No
+          ElementPosition     #332285534
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          DataField           #VisaProfessionStatus
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #VisaMaster_SitVisSource
+          ElementPosition     #1073741823
+          HierarchyParent     #HeaderGroup
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataField           #Source
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #VisaMaster_UsageType
+          ElementPosition     #715827882
+          HierarchyParent     #OtherGroup
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataField           #UsageType
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #VisaMaster_VisaType
+          AutoDeclaration     #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #HeaderGroup
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataField           #VisaType
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #VisaStatus
+          ElementPosition     #1789569705
+          HierarchyParent     #CommentGroup
+          Label               #Status
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataMethod          #getVisaStatus
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #AttachmentsButton
+          ElementPosition     #1431655764
+          HierarchyParent     #AttachmentsGroup
+          Text                #@SYS316708
+          NormalImage         #10442
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Command             #2853
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #CopyOfDeleteButton
+          ElementPosition     #1610612734
+          HierarchyParent     #NewDeleteGroup
+          Text                #@sys14425
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10121
+          ImageLocation       #EmbeddedResource
+          SaveRecord          #No
+          Primary             #Yes
+          Command             #2832
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #CopyOfNewButton
+          ElementPosition     #1073741822
+          HierarchyParent     #NewDeleteGroup
+          ButtonDisplay       #Text & Image left
+          NormalImage         #11045
+          ImageLocation       #EmbeddedResource
+          Primary             #Yes
+          Command             #260
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #DeleteButton
+          ElementPosition     #1717986916
+          HierarchyParent     #MaintainGroup
+          Text                #@SYS14425
+          NormalImage         #10121
+          ImageLocation       #EmbeddedResource
+          SaveRecord          #No
+          MultiSelect         #Yes
+          Primary             #Yes
+          Command             #2832
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #EditRecordButton
+          AutoDeclaration     #Yes
+          ElementPosition     #858993458
+          HierarchyParent     #MaintainGroup
+          Text                #@SYS317438
+          NormalImage         #10040
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Primary             #Yes
+          Command             #4471
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #ExportToExcelButton
+          ElementPosition     #1610612733
+          HierarchyParent     #ListGroup
+          NormalImage         #10156
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Command             #4436
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #NewButton
+          AutoDeclaration     #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #NewGroup
+          Text                #@REC157
+          ButtonDisplay       #Text & Image above
+          NormalImage         #11045
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Command             #260
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #ProfessionDeleteButton
+          AutoDeclaration     #Yes
+          ElementPosition     #1409286141
+          HierarchyParent     #ButtonGroup
+          Text                #@VIS26
+          ButtonDisplay       #Text & Image left
+          NormalImage         #11438
+          ImageLocation       #EmbeddedResource
+          SaveRecord          #No
+          Command             #2832
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #ProfessionNewButton
+          AutoDeclaration     #Yes
+          ElementPosition     #939524094
+          HierarchyParent     #ButtonGroup
+          Text                #@VIS25
+          ButtonDisplay       #Text & Image left
+          NormalImage         #11421
+          ImageLocation       #EmbeddedResource
+          Command             #260
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #RefreshButton
+          HelpText            #@SYS315818
+          ElementPosition     #1073741822
+          HierarchyParent     #ListGroup
+          NormalImage         #11437
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Command             #2875
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #VisaMaster_EndDate1
+          ElementPosition     #1789569705
+          HierarchyParent     #DateGroup
+          DataSource          #VisaMaster
+          DataField           #EndDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #VisaMaster_IssueDate1
+          ElementPosition     #715827882
+          HierarchyParent     #DateGroup
+          DataSource          #VisaMaster
+          DataField           #IssueDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #VisaMaster_StartDate
+          ElementPosition     #1193046470
+          HierarchyParent     #DateGroup
+          DataSource          #VisaMaster
+          DataField           #StartDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INT64EDIT
+        PROPERTIES
+          Name                #SAED_VisaPODetail_RecId
+          Visible             #No
+          ElementPosition     #1840700268
+          HierarchyParent     #Grid
+          DataSource          #SAED_VisaPODetail
+          DataField           #RecId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #Arrived
+          ElementPosition     #2091808143
+          HierarchyParent     #HeaderGrid
+          Label               #@REC221
+          DataSource          #SitVisProfession
+          DataMethod          #GetArrived
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #AssignedToAgent
+          ElementPosition     #1924781637
+          HierarchyParent     #HeaderGrid
+          Label               #@REC288
+          DataSource          #SitVisProfession
+          DataMethod          #GetAssignedToAgent
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #AssignedToApplicant
+          ElementPosition     #1980457139
+          HierarchyParent     #HeaderGrid
+          Label               #@REC289
+          DataSource          #SitVisProfession
+          DataMethod          #GetAssignedToApplicant
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #Avaiable
+          ElementPosition     #1757755131
+          HierarchyParent     #HeaderGrid
+          Label               #Available Qty
+          DataSource          #SitVisProfession
+          DataMethod          #GetAvailable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #CancelledQty
+          ElementPosition     #1785592882
+          HierarchyParent     #HeaderGrid
+          Label               #Cancelled Qty
+          DataSource          #SitVisProfession
+          DataMethod          #GetCancelled
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #FinalExit
+          ElementPosition     #1771674006
+          HierarchyParent     #HeaderGrid
+          Label               #Final Exit
+          DataSource          #SitVisProfession
+          DataMethod          #getRunawayExit
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #ResForManProj
+          ElementPosition     #1813430633
+          HierarchyParent     #HeaderGrid
+          Label               #@REC286
+          DataSource          #SitVisProfession
+          DataMethod          #GetReservedForManProj
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #ResForRecProj
+          ElementPosition     #1869106135
+          HierarchyParent     #HeaderGrid
+          Label               #@REC287
+          DataSource          #SitVisProfession
+          DataMethod          #GetReservedForRecProj
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #SitVisProfession_CancelQty
+          Visible             #No
+          ElementPosition     #1715998504
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          DataField           #CancelQty
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #SitVisProfession_ReversedQty
+          AllowEdit           #No
+          ElementPosition     #1799511757
+          HierarchyParent     #HeaderGrid
+          Label               #Reversed Qty
+          DataSource          #SitVisProfession
+          DataField           #ReversedQty
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #SitVisProfession_TotalQty
+          AutoDeclaration     #Yes
+          ElementPosition     #1702079629
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          DataField           #TotalQty
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #Stamped
+          ElementPosition     #2036132641
+          HierarchyParent     #HeaderGrid
+          Label               #@REC225
+          DataSource          #SitVisProfession
+          DataMethod          #GetStamped
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #totalQty
+          ElementPosition     #429496728
+          HierarchyParent     #VisaTotals
+          Label               #@REC154
+          DataSource          #VisaMaster
+          DataMethod          #GetTotal
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #VisaMasterArrived
+          ElementPosition     #1932735276
+          HierarchyParent     #VisaTotals
+          Label               #@REC221
+          DataSource          #VisaMaster
+          DataMethod          #GetArrived
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #VisaMasterAssignedToAgent
+          ElementPosition     #1288490184
+          HierarchyParent     #VisaTotals
+          Label               #@REC258
+          DataSource          #VisaMaster
+          DataMethod          #GetAssignedToAgent
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #VisaMasterAssignedToApplicant
+          ElementPosition     #1503238548
+          HierarchyParent     #VisaTotals
+          Label               #@REC259
+          DataSource          #VisaMaster
+          DataMethod          #GetAssignedToApplicant
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #VisaMasterAvaiable
+          ElementPosition     #644245092
+          HierarchyParent     #VisaTotals
+          Label               #@REC234
+          DataSource          #VisaMaster
+          DataMethod          #GetAvailable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #VisaMasterResForManProj
+          ElementPosition     #858993456
+          HierarchyParent     #VisaTotals
+          Label               #@REC256
+          DataSource          #VisaMaster
+          DataMethod          #GetReservedForManProj
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #VisaMasterResForRecProj
+          ElementPosition     #1073741820
+          HierarchyParent     #VisaTotals
+          Label               #@REC257
+          DataSource          #VisaMaster
+          DataMethod          #GetReservedForRecProj
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #VisaMasterStamped
+          ElementPosition     #1717986912
+          HierarchyParent     #VisaTotals
+          Label               #@REC225
+          DataSource          #VisaMaster
+          DataMethod          #GetStamped
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #EditDetailsButton
+          AutoDeclaration     #Yes
+          Visible             #No
+          ElementPosition     #1288490187
+          HierarchyParent     #MaintainGroup
+          Text                #@SYS317438
+          NormalImage         #10040
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Primary             #Yes
+          OpenMode            #Edit
+          CopyCallerQuery     #Yes
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #ReversalCancellation
+          AutoDeclaration     #Yes
+          ElementPosition     #2080374782
+          HierarchyParent     #ButtonGroup
+          Text                #Reversal
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10858
+          ImageLocation       #EmbeddedResource
+          NeedsRecord         #Yes
+          DataSource          #SitVisProfession
+          MenuItemName        #SitVisProfessionLineCancelReversal
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #SAED_VisaManagementCreatePO
+          AutoDeclaration     #Yes
+          Visible             #No
+          ElementPosition     #1610612733
+          HierarchyParent     #SAED_CreatePO
+          DataSource          #VisaMaster
+          MenuItemType        #Action
+          MenuItemName        #SAED_VisaManagementCreatePO
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #SitManVisaBorderNumber
+          AutoDeclaration     #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #BorderNum
+          ButtonDisplay       #Text & Image left
+          NormalImage         #3486
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          NeedsRecord         #Yes
+          MenuItemName        #SitManVisaBorderNumber
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #SitVisProfessionDetails
+          AutoDeclaration     #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #View
+          ButtonDisplay       #Text & Image above
+          NormalImage         #10858
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Primary             #Yes
+          NeedsRecord         #Yes
+          MenuItemName        #SitVisProfessionDetails
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VendPackingSlipJournal
+          ElementPosition     #1073741822
+          HierarchyParent     #SAED_CreatePO
+          MenuItemName        #VendPackingSlipJournal
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VisaProfessionCancellation
+          AutoDeclaration     #Yes
+          ElementPosition     #2013265918
+          HierarchyParent     #ButtonGroup
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10858
+          ImageLocation       #EmbeddedResource
+          NeedsRecord         #Yes
+          DataSource          #SitVisProfession
+          MenuItemName        #SitVisProfessionLineCancel
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #VisaProfessionDetails
+          AutoDeclaration     #Yes
+          ElementPosition     #1879048190
+          HierarchyParent     #ButtonGroup
+          ButtonDisplay       #Text & Image left
+          NormalImage         #10858
+          ImageLocation       #EmbeddedResource
+          NeedsRecord         #Yes
+          MenuItemName        #SitVisProfessionDetails
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL REALEDIT
+        PROPERTIES
+          Name                #SAED_VisaPODetail_Qty
+          ElementPosition     #1533916890
+          HierarchyParent     #Grid
+          DataSource          #SAED_VisaPODetail
+          DataField           #Qty
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #Nationality
+          AutoDeclaration     #Yes
+          ElementPosition     #1495284908
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          DataField           #Nationality
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #ProfessionArabicDescription
+          AllowEdit           #No
+          ElementPosition     #1308374294
+          HierarchyParent     #HeaderGrid
+          Label               #@REC285
+          DataSource          #SitVisProfession
+          DataMethod          #ProfessionArabicDescription
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #ProfessionDescription
+          AllowEdit           #No
+          ElementPosition     #1121463681
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          DataMethod          #ProfessionDescription
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SAED_VisaPODetail_PackingSlipId
+          Visible             #No
+          ElementPosition     #1227133512
+          HierarchyParent     #Grid
+          DataSource          #SAED_VisaPODetail
+          DataField           #PackingSlipId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SAED_VisaPODetail_PurchId
+          ElementPosition     #613566756
+          HierarchyParent     #Grid
+          DataSource          #SAED_VisaPODetail
+          DataField           #PurchId
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #enter
+            #public void enter()
+            #{
+            #    super();
+            #}
+          ENDSOURCE
+          SOURCE #modified
+            #public boolean modified()
+            #{
+            #    boolean ret;
+            # SAED_VisaPODetail.PackingSlipId = SAED_VisaPODetail.PackingSlipId;
+            #    ret = super();
+            #
+            #    return ret;
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SAED_VisaPODetail_VisaId
+          Visible             #No
+          ElementPosition     #920350134
+          HierarchyParent     #Grid
+          DataSource          #SAED_VisaPODetail
+          DataField           #VisaId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SitVisProfession_DocumentNumber
+          AllowEdit           #No
+          ElementPosition     #498428302
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          DataField           #DocumentNumber
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SitVisProfession_ParentDocumentNumber
+          ElementPosition     #1726437661
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          DataField           #ParentDocumentNumber
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SitVisProfession_VisaStampingCity
+          ElementPosition     #1729917380
+          HierarchyParent     #HeaderGrid
+          DataSource          #SitVisProfession
+          DataField           #VisaStampingCity
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_Comments
+          Width               #350
+          Height              #50
+          ElementPosition     #1431655764
+          HierarchyParent     #CommentGroup
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataField           #Comments
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_EmployeeGroup
+          ElementPosition     #1789569705
+          HierarchyParent     #HeaderGroup
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataField           #EmployeeGroup
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_FileNo
+          ElementPosition     #1789569705
+          HierarchyParent     #OtherGroup
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataField           #FileNo
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_HijriEndDate
+          ElementPosition     #1431655764
+          HierarchyParent     #DateGroup
+          DataSource          #VisaMaster
+          DataField           #HijriEndDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_HijriIssueDate
+          ElementPosition     #477218588
+          HierarchyParent     #DateGroup
+          DataSource          #VisaMaster
+          DataField           #HijriIssueDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_HijriStartDate
+          ElementPosition     #954437176
+          HierarchyParent     #DateGroup
+          DataSource          #VisaMaster
+          DataField           #HijriStartDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_LedgerJournalId
+          Visible             #No
+          ElementPosition     #2058005160
+          HierarchyParent     #OtherGroup
+          DataSource          #VisaMaster
+          DataField           #SAED_LedgerJournalId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_PurchId
+          ElementPosition     #1968526675
+          HierarchyParent     #OtherGroup
+          DataSource          #VisaMaster
+          DataField           #PurchId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_RefNo
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741823
+          HierarchyParent     #OtherGroup
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataField           #RefNo
+          PresenceDataField   #[1]
+        ENDPROPERTIES
+        
+        METHODS
+          SOURCE #lookup
+            #public void lookup()
+            #{
+            #    Query query;
+            #    QueryBuildDataSource datasourceSitVisMaster;
+            #
+            #    QueryBuildRange rangeVisaType;
+            #    SysTableLookup sysTableLookup;
+            #
+            #    query = new Query();
+            #    datasourceSitVisMaster = query.addDataSource(tableNum(SitVisMaster));
+            #
+            #
+            #    datasourceSitVisMaster.addRange(
+            #        fieldNum(SitVisMaster, VisaType)).value(int2str(SitVisType::Flexible));
+            #
+            #
+            #    sysTableLookup = SysTableLookup::newParameters(tableNum(SitVisMaster), this);
+            #    sysTableLookup.addLookupfield(fieldNum(SitVisMaster, VisaId));
+            #    sysTableLookup.parmQuery(query);
+            #    sysTableLookup.performFormLookup();
+            #}
+          ENDSOURCE
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_VisaId
+          ElementPosition     #715827882
+          HierarchyParent     #HeaderGroup
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataField           #VisaId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #VisaMaster_WorkOffice
+          ElementPosition     #1431655764
+          HierarchyParent     #OtherGroup
+          LabelBold           #Bold
+          DataSource          #VisaMaster
+          DataField           #WorkOffice
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+    ENDCONTAINER
+    
+  ENDDESIGN
+  
+  PERMISSIONS #Permissions
+    PROPERTIES
+    ENDPROPERTIES
+    
+    PERMISSIONSET #Read
+      PROPERTIES
+      ENDPROPERTIES
+      
+      FORM #Controls
+      ENDFORM
+      
+    TABLES #Tables
+    ENDTABLES
+    
+  SERVERMETHODS #Server Methods
+  ENDSERVERMETHODS
+  
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Update
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Create
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Delete
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+ENDPERMISSIONS
+
+ENDFORM
+
+
+***Element: FRM
+
+; Microsoft Dynamics AX Forms unloaded
+; --------------------------------------------------------------------------------
+FRMVERSION 12
+
+FORM #SitVisVisaList
+  PROPERTIES
+    Name                #SitVisVisaList
+    Origin              #{1638F128-1C5A-49BF-AF9D-89C35DB3AAAD}
+  ENDPROPERTIES
+  
+  METHODS
+    SOURCE #classDeclaration
+      #public class FormRun extends ObjectRun
+      #{
+      #}
+    ENDSOURCE
+  ENDMETHODS
+  OBJECTBANK
+    PROPERTIES
+      Version             #9
+    ENDPROPERTIES
+    
+    DATASOURCE
+      OBJECTPOOL
+        PROPERTIES
+          Name                #SitVisMaster
+          Table               #SitVisMaster
+          AllowEdit           #No
+          AllowCreate         #No
+          AllowDelete         #No
+        ENDPROPERTIES
+        
+        FIELDLIST
+        ENDFIELDLIST
+      ENDOBJECTPOOL
+      METHODS
+      ENDMETHODS
+    ENDDATASOURCE
+  ENDOBJECTBANK
+  
+  REFERENCEDATASOURCES
+  ENDREFERENCEDATASOURCES
+  
+  JOINS
+  ENDJOINS
+  
+  PARTREFERENCES
+    PARTREFERENCE #SitVisTotals
+      PROPERTIES
+        Name                #SitVisTotals
+        MenuItemName        #SitVisTotals
+        DataSource          #SitVisMaster
+        DataSourceRelation  #SelfLink
+        ElementPosition     #715827882
+      ENDPROPERTIES
+      
+    ENDPARTREFERENCE
+    
+    PARTREFERENCE #SitVisTotalsPreviewPane
+      PROPERTIES
+        Name                #SitVisTotalsPreviewPane
+        MenuItemName        #SitVisTotalsPreviewPane
+        PartLocation        #PreviewPane
+        DataSource          #SitVisMaster
+        DataSourceRelation  #SelfLink
+        ElementPosition     #1431655764
+      ENDPROPERTIES
+      
+    ENDPARTREFERENCE
+    
+  ENDPARTREFERENCES
+  
+  DESIGN
+    PROPERTIES
+      Caption             #@REC159
+      UseCaptionFromMenuItem  #Yes
+      WorkflowEnabled     #Yes
+      WorkflowDatasource  #SitVisMaster
+      WorkflowType        #SAED_VisaWF
+      Style               #ListPage
+      ViewEditMode        #Edit
+    ENDPROPERTIES
+    
+    CONTAINER
+      CONTROL ACTIONPANE
+        PROPERTIES
+          Name                #ActionPaneHeader
+          ElementPosition     #536870911
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL ACTIONPANETAB
+        PROPERTIES
+          Name                #HeaderHomeTab
+          ElementPosition     #1431655764
+          HierarchyParent     #ActionPaneHeader
+          Caption             #@REC158
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #AttachmentsGroup
+          ElementPosition     #1789569705
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@SYS316708
+          DataSource          #SitVisMaster
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #ListGroup
+          AutoDeclaration     #Yes
+          ElementPosition     #1431655764
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@SYS118440
+          DataSource          #SitVisMaster
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #MaintainGroup
+          ElementPosition     #1073741823
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@SYS316874
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL BUTTONGROUP
+        PROPERTIES
+          Name                #NewGroup
+          ElementPosition     #715827882
+          HierarchyParent     #HeaderHomeTab
+          Caption             #@SYS2055
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GRID
+        PROPERTIES
+          Name                #VisaListGrid
+          AllowEdit           #No
+          Width               #Column width
+          Height              #Column height
+          ElementPosition     #1610612733
+          MultiSelect         #No
+          DataSource          #SitVisMaster
+          DefaultAction       #EditDetailsButton
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL GROUP
+        PROPERTIES
+          Name                #Filter
+          Visible             #No
+          ElementPosition     #1073741822
+          Style               #CustomFilter
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #SitVisMaster_Source
+          ElementPosition     #660764196
+          HierarchyParent     #VisaListGrid
+          DataSource          #SitVisMaster
+          DataField           #Source
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #SitVisMaster_VisaType
+          ElementPosition     #495573147
+          HierarchyParent     #VisaListGrid
+          DataSource          #SitVisMaster
+          DataField           #VisaType
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMBOBOX
+        PROPERTIES
+          Name                #Status
+          ElementPosition     #2064888117
+          HierarchyParent     #VisaListGrid
+          Label               #Status
+          DataSource          #SitVisMaster
+          DataMethod          #getVisaStatus
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #AttachmentsButton
+          ElementPosition     #1431655764
+          HierarchyParent     #AttachmentsGroup
+          Text                #@SYS316708
+          NormalImage         #10442
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Command             #2853
+          ToggleButton        #Check
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #DeleteButton
+          ElementPosition     #1610612733
+          HierarchyParent     #MaintainGroup
+          Text                #@SYS14425
+          NormalImage         #10121
+          ImageLocation       #EmbeddedResource
+          SaveRecord          #No
+          MultiSelect         #Yes
+          Primary             #Yes
+          Command             #2832
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #ExportToExcelButton
+          ElementPosition     #1610612733
+          HierarchyParent     #ListGroup
+          NormalImage         #10156
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Command             #4436
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL COMMANDBUTTON
+        PROPERTIES
+          Name                #RefreshButton
+          HelpText            #@SYS315818
+          ElementPosition     #1073741822
+          HierarchyParent     #ListGroup
+          NormalImage         #11437
+          ImageLocation       #EmbeddedResource
+          Big                 #Yes
+          Command             #2875
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #SitVisMaster_EndDate
+          ElementPosition     #1651910490
+          HierarchyParent     #VisaListGrid
+          DataSource          #SitVisMaster
+          DataField           #EndDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #SitVisMaster_IssueDate
+          ElementPosition     #1321528392
+          HierarchyParent     #VisaListGrid
+          DataSource          #SitVisMaster
+          DataField           #IssueDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL DATEEDIT
+        PROPERTIES
+          Name                #SitVisMaster_StartDate
+          ElementPosition     #1486719441
+          HierarchyParent     #VisaListGrid
+          DataSource          #SitVisMaster
+          DataField           #StartDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #totalQty
+          ElementPosition     #1817101539
+          HierarchyParent     #VisaListGrid
+          Label               #@REC154
+          DataSource          #SitVisMaster
+          DataMethod          #GetTotal
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL INTEDIT
+        PROPERTIES
+          Name                #VisaMasterAvaiable
+          ElementPosition     #1982292588
+          HierarchyParent     #VisaListGrid
+          Label               #@REC234
+          DataSource          #SitVisMaster
+          DataMethod          #GetAvailable
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #EditDetailsButton
+          AutoDeclaration     #Yes
+          ElementPosition     #1073741822
+          HierarchyParent     #MaintainGroup
+          Text                #@SYS317438
+          NormalImage         #10040
+          ImageLocation       #EmbeddedResource
+          DefaultButton       #Yes
+          MultiSelect         #No
+          Big                 #Yes
+          Primary             #Yes
+          OpenMode            #Edit
+          CopyCallerQuery     #Yes
+          MenuItemName        #SitVisManagement
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL MENUITEMBUTTON
+        PROPERTIES
+          Name                #NewButton
+          ElementPosition     #1431655764
+          HierarchyParent     #NewGroup
+          Text                #@REC157
+          ButtonDisplay       #Text & Image above
+          NormalImage         #11045
+          ImageLocation       #EmbeddedResource
+          ShowShortCut        #No
+          Big                 #Yes
+          OpenMode            #New
+          MenuItemName        #SitVisManagement
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SitVisMaster_HijriEndDate
+          ElementPosition     #1156337343
+          HierarchyParent     #VisaListGrid
+          DataSource          #SitVisMaster
+          DataField           #HijriEndDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SitVisMaster_HijriIssueDate
+          ElementPosition     #825955245
+          HierarchyParent     #VisaListGrid
+          DataSource          #SitVisMaster
+          DataField           #HijriIssueDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SitVisMaster_HijriStartDate
+          ElementPosition     #991146294
+          HierarchyParent     #VisaListGrid
+          DataSource          #SitVisMaster
+          DataField           #HijriStartDate
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+      CONTROL STRINGEDIT
+        PROPERTIES
+          Name                #SitVisMaster_VisaId
+          ElementPosition     #330382098
+          HierarchyParent     #VisaListGrid
+          DataSource          #SitVisMaster
+          DataField           #VisaId
+        ENDPROPERTIES
+        
+        METHODS
+        ENDMETHODS
+      ENDCONTROL 
+      
+    ENDCONTAINER
+    
+  ENDDESIGN
+  
+  PERMISSIONS #Permissions
+    PROPERTIES
+    ENDPROPERTIES
+    
+    PERMISSIONSET #Read
+      PROPERTIES
+      ENDPROPERTIES
+      
+      FORM #Controls
+      ENDFORM
+      
+    TABLES #Tables
+    ENDTABLES
+    
+  SERVERMETHODS #Server Methods
+  ENDSERVERMETHODS
+  
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Update
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Create
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+PERMISSIONSET #Delete
+  PROPERTIES
+  ENDPROPERTIES
+  
+  FORM #Controls
+  ENDFORM
+  
+TABLES #Tables
+ENDTABLES
+
+SERVERMETHODS #Server Methods
+ENDSERVERMETHODS
+
+ASSOCIATEDFORMS #Associated Forms
+ENDASSOCIATEDFORMS
+
+ENDPERMISSIONSET
+
+ENDPERMISSIONS
+
+ENDFORM
+
+
+***Element: JOB
+
+; Microsoft Dynamics AX Job: ValidateDateFormate unloaded
+; --------------------------------------------------------------------------------
+  JOBVERSION 1
+  
+  SOURCE #ValidateDateFormate
+    #// Put In Saed_Functionas Class
+    #public str ValidateDateFormate(str 10 _splitString)
+    #
+    #{
+    #
+    #
+    #
+    #List strlist=new List(Types::String);
+    #
+    #ListIterator    iterator;
+    #
+    #str 20 _Value , result;
+    #
+    #int  valueint , counter ;
+    #
+    #boolean _NotFound=boolean::true;
+    #
+    #;
+    #
+    #strlist=strSplit(_splitString,"/");
+    #
+    #iterator = new ListIterator(strlist);
+    #
+    #Counter   = 1;
+    #
+    #while(iterator.more())
+    #
+    #{
+    #
+    #_Value =iterator.value();
+    # Valueint = str2int(_value);
+    #
+    #if (valueint >30 && Counter == 1)
+    #
+    #{
+    #
+    #    result = "Check Days Formate";
+    #
+    #}
+    #
+    #if (valueint >12 && counter == 2 )
+    #
+    #{
+    #
+    #result = "Check Month Formate";
+    #
+    #}
+    #
+    #
+    #iterator.next();
+    #    Counter ++;
+    #
+    #}
+    #
+    #return result;
+    #
+    #}
+  ENDSOURCE
+  PROPERTIES
+    Origin              #{28B1EE62-3E6E-45F4-8C82-7A73E304D099}
+  ENDPROPERTIES
+  
+
+***Element: DBT
+
+; Microsoft Dynamics AX Table : SitVisMaster unloaded
+; --------------------------------------------------------------------------------
+  TABLEVERSION 1
+  
+  TABLE #SitVisMaster
+    EnforceFKRelation 1
+    PROPERTIES
+      Name                #SitVisMaster
+      Label               #@REC272
+      FormRef             #SitVisManagement
+      TitleField1         #VisaId
+      TitleField2         #EndDate
+      CreateRecIdIndex    #Yes
+      PrimaryIndex        #VisaIdx
+      ClusterIndex        #VisaIdx
+      ModifiedBy          #Yes
+      ModifiedTransactionId #Yes
+      CreatedDateTime     #Yes
+      CreatedBy           #Yes
+      Origin              #{D157512C-04F7-453B-AE6D-8F16D5AAB8DB}
+    ENDPROPERTIES
+    
+    FIELDS
+      FIELD #Comments
+        STRING
+        PROPERTIES
+          Name                #Comments
+          Label               #@REC161
+          Table               #SitVisMaster
+          Origin              #{44CAAF52-144A-4156-848A-D5501232CB2B}
+          StringSize          #120
+        ENDPROPERTIES
+        
+      FIELD #EmployeeGroup
+        STRING
+        PROPERTIES
+          Name                #EmployeeGroup
+          Label               #@REC162
+          Table               #SitVisMaster
+          Origin              #{A0AE3A97-A174-4D2B-BE75-9533CD59870C}
+          ExtendedDataType    #SitPayEmployeeGroupId
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #EndDate
+        DATE
+        PROPERTIES
+          Name                #EndDate
+          Label               #@REC280
+          Table               #SitVisMaster
+          Origin              #{52DAFEBD-24AC-45A3-BA46-403E061C6ECF}
+          ExtendedDataType    #EndDate
+        ENDPROPERTIES
+        
+      FIELD #FileNo
+        STRING
+        PROPERTIES
+          Name                #FileNo
+          Label               #@REC164
+          Table               #SitVisMaster
+          Origin              #{C93F5083-0AAB-430E-8292-694544C96619}
+        ENDPROPERTIES
+        
+      FIELD #HijriEndDate
+        STRING
+        PROPERTIES
+          Name                #HijriEndDate
+          Label               #@REC163
+          Mandatory           #Yes
+          Table               #SitVisMaster
+          Origin              #{52344556-BEEB-4F0E-B665-48FBF16640A6}
+          ExtendedDataType    #SitPayHijriDate
+        ENDPROPERTIES
+        
+      FIELD #HijriIssueDate
+        STRING
+        PROPERTIES
+          Name                #HijriIssueDate
+          Label               #@REC167
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #SitVisMaster
+          Origin              #{9A0F05B9-D47E-4FE8-A09E-58F819FC536E}
+          ExtendedDataType    #SitPayHijriDate
+        ENDPROPERTIES
+        
+      FIELD #HijriStartDate
+        STRING
+        PROPERTIES
+          Name                #HijriStartDate
+          Label               #@REC291
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #SitVisMaster
+          Origin              #{80738AEB-6766-4134-94B5-157CF92D21C1}
+          ExtendedDataType    #SitPayHijriDate
+        ENDPROPERTIES
+        
+      FIELD #IssueDate
+        DATE
+        PROPERTIES
+          Name                #IssueDate
+          Label               #@REC165
+          AllowEdit           #No
+          Table               #SitVisMaster
+          Origin              #{1B15B2EF-5B2E-43DB-B4BB-7E76E96D4F2F}
+          ExtendedDataType    #StartDate
+        ENDPROPERTIES
+        
+      FIELD #PurchId
+        STRING
+        PROPERTIES
+          Name                #PurchId
+          Table               #SitVisMaster
+          Origin              #{42735CB3-FA06-400C-8D15-81008478E981}
+          ExtendedDataType    #PurchId
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #RefNo
+        STRING
+        PROPERTIES
+          Name                #RefNo
+          Label               #@REC166
+          Table               #SitVisMaster
+          Origin              #{E3158246-52B6-4370-B81C-C3AF4797555E}
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #SAED_LedgerJournalId
+        STRING
+        PROPERTIES
+          Name                #SAED_LedgerJournalId
+          Table               #SitVisMaster
+          Origin              #{7D76ACDB-2CD3-447B-9D2A-15D09F77ABEC}
+          ExtendedDataType    #LedgerJournalId
+        ENDPROPERTIES
+        
+      FIELD #SAED_VisaWFStatus
+        ENUM
+        PROPERTIES
+          Name                #SAED_VisaWFStatus
+          Table               #SitVisMaster
+          Origin              #{A8C6B732-E7C5-48AC-9E11-B4CA58CE3D4C}
+          EnumType            #SAED_VisaWFStatus
+        ENDPROPERTIES
+        
+      FIELD #Source
+        ENUM
+        PROPERTIES
+          Name                #Source
+          AllowEditOnCreate   #No
+          AllowEdit           #No
+          Table               #SitVisMaster
+          Origin              #{5EBF44A6-0F58-4C0C-9924-85AD27F2E1EB}
+          EnumType            #SitVisSource
+        ENDPROPERTIES
+        
+      FIELD #StartDate
+        DATE
+        PROPERTIES
+          Name                #StartDate
+          Label               #@REC290
+          AllowEdit           #No
+          Table               #SitVisMaster
+          Origin              #{C98E8777-5DE1-440B-8811-DD8FE252AC18}
+          ExtendedDataType    #StartDate
+        ENDPROPERTIES
+        
+      FIELD #UsageType
+        ENUM
+        PROPERTIES
+          Name                #UsageType
+          Label               #@REC168
+          Table               #SitVisMaster
+          Origin              #{777A5692-CD86-430A-8042-F75B4E66C1BE}
+          EnumType            #SitVisUsageType
+        ENDPROPERTIES
+        
+      FIELD #VisaId
+        STRING
+        PROPERTIES
+          Name                #VisaId
+          Label               #@REC7
+          Mandatory           #Yes
+          AllowEdit           #No
+          Table               #SitVisMaster
+          Origin              #{6BECFD06-D0E3-476F-A350-D00A59A8290A}
+          ExtendedDataType    #SitVisId
+          StringSize          #20
+        ENDPROPERTIES
+        
+      FIELD #VisaType
+        ENUM
+        PROPERTIES
+          Name                #VisaType
+          Label               #@REC169
+          AllowEdit           #No
+          Table               #SitVisMaster
+          Origin              #{71A72848-B10E-4040-8008-553A4F58EF59}
+          EnumType            #SitVisType
+        ENDPROPERTIES
+        
+      FIELD #WorkOffice
+        STRING
+        PROPERTIES
+          Name                #WorkOffice
+          Label               #@REC170
+          Table               #SitVisMaster
+          Origin              #{E321E2D5-64A6-4113-A6B4-C16D551EA64A}
+          ExtendedDataType    #SitWorkOffice
+        ENDPROPERTIES
+        
+    ENDFIELDS
+    GROUPS
+      GROUP #AutoLookup
+        PROPERTIES
+          Name                #AutoLookup
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #VisaId
+          #HijriStartDate
+          #HijriEndDate
+          #StartDate
+          #EndDate
+        ENDGROUPFIELDS
+      ENDGROUP
+      GROUP #AutoIdentification
+        PROPERTIES
+          Name                #AutoIdentification
+        ENDPROPERTIES
+        
+        GROUPFIELDS
+          #VisaId
+        ENDGROUPFIELDS
+      ENDGROUP
+    ENDGROUPS
+    
+    INDICES
+      #VisaIdx
+      PROPERTIES
+        Name                #VisaIdx
+        AllowDuplicates     #No
+        AlternateKey        #Yes
+        Origin              #{01565748-8879-4F55-A080-570B3829C6B0}
+      ENDPROPERTIES
+      
+      INDEXFIELDS
+        #VisaId
+      ENDINDEXFIELDS
+      
+    ENDINDICES
+    FULLTEXTINDICES
+    ENDFULLTEXTINDICES
+    REFERENCES
+      REFERENCE #PurchTable
+        PROPERTIES
+          Name                #PurchTable
+          Table               #PurchTable
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #PurchId
+            RelatedField        #PurchId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #SitPayEmployeeGroup
+        PROPERTIES
+          Name                #SitPayEmployeeGroup
+          Table               #SitPayEmployeeGroup
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE PKFK
+          PROPERTIES
+            Field               #EmployeeGroup
+            RelatedField        #EmployeeGroupId
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+      REFERENCE #SitVisWorkOffice
+        PROPERTIES
+          Name                #SitVisWorkOffice
+          Table               #SitVisWorkOffice
+          UseDefaultRoleNames #Yes
+        ENDPROPERTIES
+        
+        FIELDREFERENCES
+          REFERENCETYPE NORMAL
+          PROPERTIES
+            Field               #WorkOffice
+            RelatedField        #Code
+          ENDPROPERTIES
+          
+        ENDFIELDREFERENCES
+      ENDREFERENCE
+    ENDREFERENCES
+    
+    DELETEACTIONS
+      #SitHcmApplicant(SitVisMaster)
+      PROPERTIES
+        Table               #SitHcmApplicant
+        DeleteAction        #Restricted
+        Relation            #SitVisMaster
+      ENDPROPERTIES
+      
+      #SitHcmWorker(SitVisMaster)
+      PROPERTIES
+        Table               #SitHcmWorker
+        DeleteAction        #Restricted
+        Relation            #SitVisMaster
+      ENDPROPERTIES
+      
+      #SitManVisaBorderNumber(SitVisMaster)
+      PROPERTIES
+        Table               #SitManVisaBorderNumber
+        DeleteAction        #Cascade
+        Relation            #SitVisMaster
+      ENDPROPERTIES
+      
+      #SitVisProfession(SitVisMaster)
+      PROPERTIES
+        Table               #SitVisProfession
+        DeleteAction        #Restricted
+        Relation            #SitVisMaster
+      ENDPROPERTIES
+      
+    ENDDELETEACTIONS
+    
+    METHODS
+      SOURCE #aosValidateInsert
+        #public boolean aosValidateInsert()
+        #{
+        #    boolean ret;
+        #    date        startdate , enddate;
+        #    SAED_Functions          SAED_Functions;
+        #    str 20                  Result , resultstart , resultend;
+        #
+        #    ;
+        #    SAED_Functions = new SAED_Functions();
+        #      ret = super();
+        #    if(this.HijriIssueDate && this.HijriEndDate && this.HijriStartDate)
+        #    {
+        #
+        #    Result      = SAED_Functions.ValidateDateFormate(this.HijriIssueDate);
+        #    resultstart = SAED_Functions.ValidateDateFormate(this.HijriStartDate);
+        #    resultend   = SAED_Functions.ValidateDateFormate(this.HijriEndDate);
+        #
+        #    if(Result == "Days")
+        #    {
+        #      ret=  checkFailed("Check Formate");
+        #    }
+        #
+        #        else If( Result == "Months")
+        #        {
+        #            ret=  checkFailed("Check Formate");
+        #        }
+        #
+        #            if(resultstart == "Days")
+        #            {
+        #            ret=  checkFailed("Check Formate");
+        #            }
+        #
+        #                else If( Resultstart == "Months")
+        #                {
+        #                ret=  checkFailed("Check Formate");
+        #                }
+        #
+        #            if(Resultend == "Days")
+        #                {
+        #                    ret=  checkFailed("Check Formate");
+        #                }
+        #
+        #                    else If( Resultend == "Months")
+        #                    {
+        #                        ret=  checkFailed("Check Formate");
+        #                    }
+        #
+        #    startdate = SAED_Functions.ConvertToGregorianDate(this.HijriIssueDate);
+        #    enddate   = SAED_Functions.ConvertToGregorianDate(this.HijriEndDate);
+        #
+        #    if(startdate>enddate)
+        #    {
+        #
+        #        ret=  checkFailed("Issue date should be less than End date");
+        #       // super();
+        #    }
+        #
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #aosValidateUpdate
+        #public boolean aosValidateUpdate()
+        #{
+        #    boolean ret;
+        #    date        startdate , enddate;
+        #    SAED_Functions          SAED_Functions;
+        #
+        #    ;
+        #    SAED_Functions = new SAED_Functions();
+        #    startdate = SAED_Functions.ConvertToGregorianDate(this.HijriIssueDate);
+        #    enddate   = SAED_Functions.ConvertToGregorianDate(this.HijriEndDate);
+        #      ret = super();
+        #    if(startdate>enddate)
+        #    {
+        #
+        #        ret=  checkFailed("Issue date should be less than End date");
+        #       // super();
+        #    }
+        #
+        #
+        #    return ret;
+        #
+        #}
+        #
+        #
+      ENDSOURCE
+      SOURCE #canSubmitToWorkflow
+        #public boolean canSubmitToWorkflow(str _workflowType = '')
+        #{
+        #    boolean ret;
+        #    if (this.SAED_VisaWFStatus ==SAED_VisaWFStatus::NotSubmit)
+        #    {
+        #        ret = boolean::true;
+        #    }
+        #    else
+        #    {
+        #        ret =boolean::false;
+        #    }
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #GetArrived
+        #display int GetArrived()
+        #{
+        #
+        #         SitVisProfessionLines   sitVisProfessionLines;
+        #
+        #      select count(RecId) from sitVisProfessionLines where sitVisProfessionLines.VisaId == this.VisaId
+        #                                                        && sitVisProfessionLines.Status == SitVisStatus::Arrived;
+        #
+        #     return sitVisProfessionLines.RecId;
+        #}
+      ENDSOURCE
+      SOURCE #GetAssignedToAgent
+        #display int GetAssignedToAgent()
+        #{
+        #
+        #     SitVisProfessionLines   sitVisProfessionLines;
+        #
+        #      select count(RecId) from sitVisProfessionLines where sitVisProfessionLines.VisaId == this.VisaId
+        #                                                        && sitVisProfessionLines.Status == SitVisStatus::AssignedToAgent;
+        #
+        #     return sitVisProfessionLines.RecId;
+        #}
+      ENDSOURCE
+      SOURCE #GetAssignedToApplicant
+        #display int GetAssignedToApplicant()
+        #{
+        #
+        #     SitVisProfessionLines   sitVisProfessionLines;
+        #
+        #      select count(RecId) from sitVisProfessionLines where sitVisProfessionLines.VisaId == this.VisaId
+        #                                                        && sitVisProfessionLines.Status == SitVisStatus::AssignedToApplicant;
+        #
+        #     return sitVisProfessionLines.RecId;
+        #}
+      ENDSOURCE
+      SOURCE #GetAvailable
+        #display Int GetAvailable()
+        #{
+        #
+        #      SitVisProfessionLines   sitVisProfessionLines;
+        #
+        #      select count(RecId) from sitVisProfessionLines where  sitVisProfessionLines.VisaId == this.VisaId
+        #                                                        &&  sitVisProfessionLines.Status == SitVisStatus::Available;
+        #
+        #        if(this.RefNo == "")
+        #        {
+        #        return this.GetAvailableFlexi();
+        #        }
+        #        else
+        #        {
+        #        return   sitVisProfessionLines.RecId;
+        #        }
+        #
+        #
+        #}
+      ENDSOURCE
+      SOURCE #GetAvailableFlexi
+        #display Int GetAvailableFlexi()
+        #{
+        #
+        #
+        #      SAED_VisaLines SAED_VisaLines,SAED_VisaLinesAssigned,SAED_VisaLinesCancelledDate;
+        #       transdate    canceldt,visaexpirydt ;
+        #
+        #
+        #
+        #      select firstOnly SAED_VisaLinesCancelledDate where  SAED_VisaLinesCancelledDate.FlexiVisaId == this.VisaId;
+        #    if(SAED_VisaLinesCancelledDate.VisaExpiryDt!= "")
+        #    {
+        #      visaexpirydt = str2Date(SAED_VisaLinesCancelledDate.VisaExpiryDt,123);
+        #
+        #
+        #      select count(RecId) from SAED_VisaLines where  SAED_VisaLines.FlexiVisaId == this.VisaId
+        #                                                        &&  ( SAED_VisaLines.Status == SitVisStatus::Cancelled)
+        #                                                        && SAED_VisaLines.CancelDt < visaexpirydt+1;
+        #    }
+        #      select count(RecId) from SAED_VisaLinesAssigned where  SAED_VisaLinesAssigned.FlexiVisaId == this.VisaId;
+        #
+        #
+        #      return  (this.GetTotal()-SAED_VisaLinesAssigned.RecId)+ SAED_VisaLines.RecId;
+        #
+        #
+        #
+        #
+        #
+        #}
+      ENDSOURCE
+      SOURCE #GetReservedForManProj
+        #display int GetReservedForManProj()
+        #{
+        #     SitVisProfessionLines   sitVisProfessionLines;
+        #
+        #      select count(RecId) from sitVisProfessionLines where  sitVisProfessionLines.VisaId == this.VisaId
+        #                                                        &&  sitVisProfessionLines.Status == SitVisStatus::ReservedForManProj;
+        #
+        #
+        #      return   sitVisProfessionLines.RecId;
+        #}
+      ENDSOURCE
+      SOURCE #GetReservedForRecProj
+        #display int GetReservedForRecProj()
+        #{
+        #     SitVisProfessionLines   sitVisProfessionLines;
+        #
+        #      select count(RecId) from sitVisProfessionLines where  sitVisProfessionLines.VisaId == this.VisaId
+        #                                                        &&  sitVisProfessionLines.Status == SitVisStatus::ReservedForRecProj;
+        #
+        #
+        #      return   sitVisProfessionLines.RecId;
+        #}
+      ENDSOURCE
+      SOURCE #GetStamped
+        #display int GetStamped()
+        #{
+        #      SitVisProfessionLines   sitVisProfessionLines;
+        #
+        #      select count(RecId) from sitVisProfessionLines where  sitVisProfessionLines.VisaId == this.VisaId
+        #                                                        &&  sitVisProfessionLines.Status == SitVisStatus::Stamped;
+        #
+        #
+        #      return   sitVisProfessionLines.RecId;
+        #}
+      ENDSOURCE
+      SOURCE #GetTotal
+        #display int GetTotal()
+        #{
+        #
+        #     SitVisProfession   sitVisProfession;
+        #
+        #      select sum(TotalQty) from sitVisProfession where sitVisProfession.VisaId == this.VisaId;
+        #
+        #
+        #     return sitVisProfession.TotalQty;
+        #}
+      ENDSOURCE
+      SOURCE #getVisaStatus
+        #display VisaExpiryStatus getVisaStatus()
+        #{
+        #    SAED_Functions sfn = new SAED_Functions();
+        #    Transdate gDate;
+        #
+        #    if(!this.HijriEndDate)
+        #    {
+        #         return VisaExpiryStatus::Active;
+        #        }
+        #        gDate = sfn.ConvertToGregorianDate(this.HijriEndDate);
+        #        if((gdate - today())>  0)
+        #        {
+        #            return VisaExpiryStatus::Active;
+        #        }
+        #        else
+        #        {
+        #            return VisaExpiryStatus::Expiry;
+        #        }
+        #
+        #}
+      ENDSOURCE
+      SOURCE #modifiedField
+        #public void modifiedField(FieldId _fieldId)
+        #{
+        #
+        #    SitPayUmAlQuraDates    SitPayUmAlQuraDatesLocal;
+        #
+        #    super(_fieldId);
+        #
+        #
+        #    switch (_fieldId)
+        #    {
+        #
+        #        case fieldNum(SitVisMaster,HijriEndDate):
+        #
+        #
+        #            /*select SitPayUmAlQuraDatesLocal where SitPayUmAlQuraDatesLocal.HijriDate ==this.HijriEndDate;
+        #            this.enddate=SitPayUmAlQuraDatesLocal.GeorgianDate;*/
+        #
+        #            this.enddate=SitPayParametrs::ConvertToGeorgian(this.HijriEndDate);
+        #
+        #
+        #            break;
+        #
+        #        case fieldNum(SitVisMaster,HijriStartDate):
+        #
+        #            /*select SitPayUmAlQuraDatesLocal where SitPayUmAlQuraDatesLocal.HijriDate ==this.HijriStartDate;
+        #            this.StartDate=SitPayUmAlQuraDatesLocal.GeorgianDate;*/
+        #
+        #
+        #             this.StartDate=SitPayParametrs::ConvertToGeorgian(this.HijriStartDate);
+        #
+        #
+        #            break;
+        #
+        #        case fieldNum(SitVisMaster,HijriIssueDate):
+        #
+        #            /*select SitPayUmAlQuraDatesLocal where SitPayUmAlQuraDatesLocal.HijriDate ==this.HijriIssueDate;
+        #            this.IssueDate=SitPayUmAlQuraDatesLocal.GeorgianDate;*/
+        #
+        #
+        #             this.IssueDate=SitPayParametrs::ConvertToGeorgian(this.HijriIssueDate);
+        #
+        #
+        #            break;
+        #
+        #    }
+        #}
+      ENDSOURCE
+      SOURCE #validateDelete
+        #public boolean validateDelete()
+        #{
+        #    boolean ret;
+        #    SitVisProfessionLines   SitVisProfessionLines;
+        #
+        #    ret = super();
+        #
+        #
+        #    select count(RecId) from SitVisProfessionLines where SitVisProfessionLines.Status!=SitVisStatus::Available
+        #                                                    &&   SitVisProfessionLines.VisaId==this.VisaId;
+        #
+        #
+        #    if (SitVisProfessionLines.recId>0)
+        #    {
+        #        ret=checkFailed("@REC292");
+        #
+        #    }
+        #
+        #    return ret;
+        #}
+      ENDSOURCE
+      SOURCE #visaExpiryDays
+        #display Int visaExpiryDays()
+        #{
+        #    date visaExpiryDt;
+        #    SAED_Functions sf = new SAED_Functions();
+        #
+        #    visaExpiryDt= sf.ConvertToGregorianDate(this.HijriEndDate);
+        #
+        #
+        #     return (today() - (visaExpiryDt));
+        #
+        #
+        #
+        #}
+      ENDSOURCE
+      SOURCE #updateWorkFlowState
+        #public static void updateWorkFlowState(RefRecId _id, SAED_VisaWFStatus _status)
+        #
+        #{
+        #    SitVisMaster sitVisMaster;
+        #    select forUpdate sitVisMaster where sitVisMaster.RecId ==_id;
+        #
+        #    if (sitVisMaster !=null)
+        #    {
+        #        ttsBegin;
+        #        sitVisMaster.SAED_VisaWFStatus = _status;
+        #        sitVisMaster.update();
+        #        ttsCommit;
+        #    }
+        #
+        #}
+      ENDSOURCE
+    ENDMETHODS
+  ENDTABLE
+  
+
+***Element: PRN
+
+; Microsoft Dynamics AX Project : Saed_MKA_Visa_List unloaded
+; --------------------------------------------------------------------------------
+  PROJECTVERSION 2
+  
+  PROJECT #Saed_MKA_Visa_List
+  SHARED
+  PROPERTIES
+    Name                #Saed_MKA_Visa_List
+    Origin              #{7318775F-0607-4C22-8912-392003A7C90E}
+  ENDPROPERTIES
+  
+    PROJECTCLASS ProjectNode
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 11
+      UTILOBJECTID 0
+      NODETYPE 201
+      NAME #SitVisManagement
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 11
+      UTILOBJECTID 0
+      NODETYPE 201
+      NAME #SitVisVisaList
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 5
+      UTILOBJECTID 0
+      NODETYPE 215
+      NAME #ValidateDateFormate
+    ENDNODE
+    BEGINNODE
+      FILETYPE 0
+      UTILTYPE 44
+      UTILOBJECTID 104836
+      NODETYPE 204
+      NAME #SitVisMaster
+    ENDNODE
+  ENDPROJECT
+  
+
+***Element: END
