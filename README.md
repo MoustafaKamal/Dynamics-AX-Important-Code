@@ -27,11 +27,13 @@ if you want to make the number sequance created once you open a form
 
 at form datasource overrite initvalue method and write this code :
 
+//code start------------------------------
 public void initValue()
 {
     super();
     Saed_MKA_FreezingTable.Saed_MKA_FreezingNum='';
     Saed_MKA_FreezingTable.initNumSeq();
 }
+// code ended ----------------------------
 
 once you open the form and press new it will automatically initiate the new sequance number. 
